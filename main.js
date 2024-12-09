@@ -1,13 +1,17 @@
-const { ethers } = require("ethers");
+// Import ethers.js library (if not using CDN in the HTML)
+// const { ethers } = require('ethers');
 
-let provider;
-let signer;
-let tokenContract;
+// 1. Set up your provider
+// You can use a web3 provider like MetaMask or an Infura/Alchemy provider.
+const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981";
-const tokenABI = [
-    // Replace with your contract's ABI
-    [
+// 2. Set up your contract ABI and address
+const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981"; // Replace with your contract address
+
+// ABI of the contract (replace with your actual ABI)
+const contractABI = [
+  // Example: Replace with your contract's ABI functions and events
+  {[
 	{
 		"inputs": [
 			{
@@ -442,34 +446,77 @@ const tokenABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-],
+]}
+  // Add other functions and events from your contract ABI here...
 ];
 
-document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
-document.getElementById("mineButton").addEventListener("click", mineToken);
+// 3. Connect to the contract
+const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
+// 4. Request access to the user's Ethereum account (e.g., MetaMask)
 async function connectWallet() {
-    if (typeof window.ethereum !== "undefined") {
-        provider = new ethers.Web3Provider(window.ethereum);
-        await window.ethereum.request({ method: "eth_requestAccounts" });
-        signer = provider.getSigner();
-        tokenContract = new ethers.Contract(contractAddress, tokenABI, signer);
-        console.log("Wallet connected");
-        document.getElementById("mineButton").disabled = false; // Enable mining button
-    } else {
-        alert("Please install MetaMask or another Ethereum wallet extension.");
-    }
+  // Prompt the user to connect their wallet (MetaMask or any provider)
+  await provider.send("eth_requestAccounts", []);
+  const signer = provider.getSigner(); // Get the signer (wallet)
+  console.log("Connected to:", await signer.getAddress());
+
+  // Optionally, set up a contract instance with signer (if you need to send transactions)
+  const contractWithSigner = contract.connect(signer);
+  return contractWithSigner;
 }
 
-async function mineToken() {
-    try {
-        const tx = await tokenContract.mine();
-        console.log("Mining transaction sent:", tx);
-        await tx.wait();
-        alert("Token mined successfully!");
-    } catch (err) {
-        console.error("Error mining token:", err);
-        alert("Error mining token. Please try again.");
-    }
+// 5. Interact with the contract
+async function getBalance(address) {
+  // Ensure the contract is connected to the signer
+  const contractWithSigner = await connectWallet();
+
+  // Example of reading data from the contract (balance of a specific address)
+  try {
+    const balance = await contract.balanceOf(address);
+    console.log(`Balance of ${address}:`, balance.toString());
+  } catch (error) {
+    console.error("Error fetching balance:", error);
+  }
 }
+
+async function approveSpender(spenderAddress, amount) {
+  // Example of interacting with the contract to approve a spender
+  try {
+    const contractWithSigner = await connectWallet();
+    const tx = await contractWithSigner.approve(spenderAddress, ethers.utils.parseUnits(amount, 18)); // 18 is the decimal for most tokens
+    console.log("Transaction hash:", tx.hash);
+    
+    // Wait for the transaction to be mined
+    await tx.wait();
+    console.log("Approval transaction confirmed.");
+  } catch (error) {
+    console.error("Error approving spender:", error);
+  }
+}
+
+async function transferTokens(receiverAddress, amount) {
+  // Example of sending tokens from the connected wallet to another address
+  try {
+    const contractWithSigner = await connectWallet();
+    const tx = await contractWithSigner.transfer(receiverAddress, ethers.utils.parseUnits(amount, 18)); // Adjust decimal if needed
+    console.log("Transaction hash:", tx.hash);
+    
+    // Wait for the transaction to be mined
+    await tx.wait();
+    console.log("Transfer transaction confirmed.");
+  } catch (error) {
+    console.error("Error transferring tokens:", error);
+  }
+}
+
+// Example usage:
+// Get the balance of a specific address
+getBalance("0xSomeEthereumAddressHere");
+
+// Approve a spender to spend tokens
+approveSpender("0xSpenderAddressHere", "100"); // Approve spender with 100 tokens
+
+// Transfer tokens to another address
+transferTokens("0xReceiverAddressHere", "50"); // Transfer 50 tokens
+
 
