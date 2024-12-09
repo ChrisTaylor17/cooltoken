@@ -18,7 +18,7 @@
         let signer;
         let tokenContract;
 
-        const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981"; // Replace with your contract address
+        const contractAddress = 0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981; // Replace with your contract address
         const tokenABI = [
             // Replace with your contract's ABI
             [
@@ -466,17 +466,30 @@
 
         async function connectWallet() {
             if (typeof window.ethereum !== "undefined") {
-                provider = new ethers.Web3Provider(window.ethereum);
-                await window.ethereum.request({ method: "eth_requestAccounts" });
-                signer = provider.getSigner();
-                const userAddress = await signer.getAddress(); // Directly get the wallet address
-                console.log("Connected address:", userAddress);
-                
-                // Initialize the contract with the wallet signer
-                tokenContract = new ethers.Contract(contractAddress, tokenABI, signer);
-                
-                console.log("Wallet connected");
-                document.getElementById("mineButton").disabled = false; // Enable the mine button
+                console.log("Ethereum provider detected");
+
+                try {
+                    provider = new ethers.Web3Provider(window.ethereum);
+                    await window.ethereum.request({ method: "eth_requestAccounts" });
+
+                    signer = provider.getSigner();
+                    const userAddress = await signer.getAddress(); // Directly get the wallet address
+
+                    console.log("Connected address:", userAddress);
+
+                    // Check if the address is connected to the expected network
+                    const network = await provider.getNetwork();
+                    console.log("Network connected:", network.name);
+
+                    // Initialize the contract with the wallet signer
+                    tokenContract = new ethers.Contract(contractAddress, tokenABI, signer);
+
+                    console.log("Wallet connected successfully");
+                    document.getElementById("mineButton").disabled = false; // Enable the mine button
+                } catch (error) {
+                    console.error("Error connecting wallet:", error);
+                    alert("Error connecting wallet. Please check your MetaMask settings.");
+                }
             } else {
                 alert("Please install MetaMask or another Ethereum wallet extension.");
             }
