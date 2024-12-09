@@ -469,7 +469,7 @@
                 console.log("Ethereum provider detected");
 
                 try {
-                    provider = new ethers.Web3Provider(window.ethereum);
+                    provider = new ethers.BrowserProvider(window.ethereum);  // Use BrowserProvider instead of Web3Provider
                     await window.ethereum.request({ method: "eth_requestAccounts" });
 
                     signer = provider.getSigner();
@@ -510,5 +510,6 @@
     </script>
 </body>
 </html>
+
 
 
