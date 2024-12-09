@@ -3,18 +3,42 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Token Mining</title>
+  <title>Token Miner</title>
   <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
   <script defer src="main.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-    button { padding: 10px 20px; font-size: 16px; }
-    #status { margin-top: 20px; font-size: 14px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    button:hover:not(:disabled) {
+      background-color: #45a049;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-  <h1>Mine Sepolia Tokens</h1>
-  <button id="mineButton">Mine Token</button>
-  <div id="status">Click the button to mine tokens!</div>
+  <h1>Token Mining Platform</h1>
+  <button id="connectWallet">Connect Wallet</button>
+  <button id="mineToken" disabled>Mine Token</button>
+  <div id="status">Connect your wallet to begin.</div>
 </body>
 </html>
