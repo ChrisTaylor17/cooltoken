@@ -1,7 +1,13 @@
-const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981"; // Replace with your token contract address
-const abi = [
-  // Replace with your contract's ABI
-  {[
+const { ethers } = require("ethers");
+
+let provider;
+let signer;
+let tokenContract;
+
+const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981";
+const tokenABI = [
+    // Replace with your contract's ABI
+    [
 	{
 		"inputs": [
 			{
@@ -436,62 +442,34 @@ const abi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]}
+],
 ];
 
-let signer;
-let contract;
+document.getElementById("connectWalletButton").addEventListener("click", connectWallet);
+document.getElementById("mineButton").addEventListener("click", mineToken);
 
 async function connectWallet() {
-  updateStatus("Connecting wallet...", "loading");
-
-  if (!window.ethereum) {
-    updateStatus("MetaMask is not installed. Please install it to use this site.", "error");
-    return;
-  }
-
-  try {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    signer = provider.getSigner();
-    contract = new ethers.Contract(contractAddress, abi, signer);
-
-    // Enable the mining button
-    document.getElementById("mineToken").disabled = false;
-    document.getElementById("mineToken").classList.remove("hidden");
-    updateStatus("Wallet connected! You can now mine tokens.", "success");
-  } catch (error) {
-    updateStatus("Error connecting wallet: " + error.message, "error");
-  }
+    if (typeof window.ethereum !== "undefined") {
+        provider = new ethers.Web3Provider(window.ethereum);
+        await window.ethereum.request({ method: "eth_requestAccounts" });
+        signer = provider.getSigner();
+        tokenContract = new ethers.Contract(contractAddress, tokenABI, signer);
+        console.log("Wallet connected");
+        document.getElementById("mineButton").disabled = false; // Enable mining button
+    } else {
+        alert("Please install MetaMask or another Ethereum wallet extension.");
+    }
 }
 
 async function mineToken() {
-  if (!contract) {
-    updateStatus("Connect your wallet first.", "error");
-    return;
-  }
-
-  try {
-    updateStatus("Mining token...", "loading");
-    const tx = await contract.mineToken();
-    console.log("Transaction sent:", tx);
-    await tx.wait();
-    updateStatus("Token mined successfully!", "success");
-  } catch (error) {
-    console.error("Error mining token:", error);
-    updateStatus("Error mining token: " + error.message, "error");
-  }
+    try {
+        const tx = await tokenContract.mine();
+        console.log("Mining transaction sent:", tx);
+        await tx.wait();
+        alert("Token mined successfully!");
+    } catch (err) {
+        console.error("Error mining token:", err);
+        alert("Error mining token. Please try again.");
+    }
 }
-
-function updateStatus(message, statusClass) {
-  const statusElement = document.getElementById("status");
-  statusElement.textContent = message;
-  statusElement.className = 'hidden';  // Reset status class
-  statusElement.classList.add(statusClass);
-}
-
-// Event Listeners
-document.getElementById("connectWallet").addEventListener("click", connectWallet);
-document.getElementById("mineToken").addEventListener("click", mineToken);
 
