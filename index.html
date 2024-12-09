@@ -3,41 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Token Miner</title>
+  <title>Token Mining Platform</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
   <style>
+    /* Global Styles */
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f7fc;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
       text-align: center;
-      margin-top: 50px;
+    }
+    h1 {
+      color: #4CAF50;
+      margin-bottom: 20px;
+    }
+    .container {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
     }
     button {
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 15px 30px;
+      font-size: 18px;
+      margin-top: 20px;
       background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
+      transition: background-color 0.3s;
+      width: 100%;
+    }
+    button:hover {
+      background-color: #45a049;
     }
     button:disabled {
-      background-color: #ccc;
+      background-color: #cccccc;
       cursor: not-allowed;
-    }
-    button:hover:not(:disabled) {
-      background-color: #45a049;
     }
     #status {
       margin-top: 20px;
-      font-size: 14px;
+      font-size: 16px;
       color: #555;
+    }
+    #status.success {
+      color: #4CAF50;
+    }
+    #status.error {
+      color: #e74c3c;
+    }
+    .loading {
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Token Mining Platform</h1>
-  <button id="connectWallet">Connect Wallet</button>
-  <button id="mineToken" disabled>Mine Token</button>
-  <div id="status">Connect your wallet to begin.</div>
+  <div class="container">
+    <h1>Token Mining Platform</h1>
+    <button id="connectWallet">Connect Wallet</button>
+    <button id="mineToken" class="hidden" disabled>Mine Token</button>
+    <div id="status">Connect your wallet to start mining tokens.</div>
+  </div>
 
   <script src="https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js"></script>
   <script src="main.js"></script>
