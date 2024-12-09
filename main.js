@@ -10,8 +10,6 @@ const contractAddress = "0xff8e57e96eca2eac66ad3fd6e3c95b6cc1efc981"; // Replace
 
 // ABI of the contract (replace with your actual ABI)
 const contractABI = [
-  // Example: Replace with your contract's ABI functions and events
-  {[
 	{
 		"inputs": [
 			{
