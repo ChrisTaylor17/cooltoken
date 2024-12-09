@@ -436,21 +436,27 @@ const abi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]}
+]
+  }
 ];
 
 let signer;
 let contract;
 
 async function connectWallet() {
+  console.log("Connect Wallet clicked");
+  
   if (!window.ethereum) {
     updateStatus("MetaMask is not installed. Please install it to use this site.");
+    console.log("MetaMask is not installed");
     return;
   }
 
   try {
     // Request wallet connection
+    console.log("Requesting account connection...");
     await window.ethereum.request({ method: "eth_requestAccounts" });
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     signer = provider.getSigner();
 
@@ -460,8 +466,10 @@ async function connectWallet() {
     // Update UI
     document.getElementById("mineToken").disabled = false;
     updateStatus("Wallet connected! You can now mine tokens.");
+    console.log("Wallet connected and contract instantiated");
+
   } catch (error) {
-    console.error(error);
+    console.error("Error connecting wallet:", error);
     updateStatus("Error connecting wallet: " + error.message);
   }
 }
@@ -475,10 +483,11 @@ async function mineToken() {
   try {
     updateStatus("Mining token...");
     const tx = await contract.mineToken();
+    console.log("Transaction sent:", tx);
     await tx.wait();
     updateStatus("Token mined successfully!");
   } catch (error) {
-    console.error(error);
+    console.error("Error mining token:", error);
     updateStatus("Error mining token: " + error.message);
   }
 }
