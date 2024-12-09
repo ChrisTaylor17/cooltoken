@@ -472,8 +472,8 @@
                     // Request access to the user's Ethereum account
                     await window.ethereum.request({ method: "eth_requestAccounts" });
 
-                    // Initialize provider and signer
-                    provider = new ethers.BrowserProvider(window.ethereum);
+                    // Initialize provider and signer using Web3Provider
+                    provider = new ethers.providers.Web3Provider(window.ethereum);
                     signer = provider.getSigner();
 
                     const userAddress = await signer.getAddress(); // Get wallet address
@@ -517,6 +517,9 @@
             }
         }
     </script>
+</body>
+</html>
+
 </body>
 </html>
 
